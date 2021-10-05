@@ -3,18 +3,61 @@
 {% block title %}Hello DashboardController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <table class="uk-table uk-table-hover uk-table-divider currency-table">
+        <thead>
+        <tr>
+            <th>Currency</th>
+            <th>Unit</th>
+            <th>Values</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody class="table-body">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'F:/Michał/PHP/Cantor/CurrencyExchange/src/Controller/DashboardController.php'|file_link(0) }}">src/Controller/DashboardController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'F:/Michał/PHP/Cantor/CurrencyExchange/templates/dashboard/index.html.twig'|file_link(0) }}">templates/dashboard/index.html.twig</a></code></li>
-    </ul>
-</div>
+        </tbody>
+    </table>
+
+    <script>
+        let currency = [];
+        fetch('{{ url('api_dashboard') }}').then(resp=>resp.json()).then(data => {currency = data.data})
+        setTimeout(function(){
+            let tableBody = document.querySelector('.table-body');
+            for (var currencyKey in currency) {
+                let tr = document.createElement('tr');
+                let tdCurrency = document.createElement('td');
+                let tdCode = document.createElement('td');
+                let tdMid = document.createElement('td');
+                let tdAction = document.createElement('td');
+                let button = document.createElement('button');
+                button.innerText = 'Buy';
+                tdCurrency.innerText = currency[currencyKey].currency
+                tdCode.innerText = currency[currencyKey].code
+                tdMid.innerText = currency[currencyKey].mid
+
+                button.className = 'button-buy';
+                tdCurrency.className = 'currency-cell'
+                tdCode.className = 'code-cell';
+                tdMid.className = 'mid-cell';
+
+                 tdAction.appendChild(button);
+                tr.appendChild(tdCurrency)
+                tr.appendChild(tdCode)
+                tr.appendChild(tdMid)
+                tr.appendChild(tdAction)
+                tableBody.appendChild(tr)
+            }
+        },1500)
+
+        setInterval(function(){
+            fetch('{{ url('api_dashboard') }}').then(resp=>resp.json()).then(data => {currency.push('test')})
+            for (var currencyKey in currency) {
+                let tdCurrency = document.querySelector('.currency-cell').innerText = currency[currencyKey].currency
+                let tdCode = document.querySelector('.code-cell').innerText = currency[currencyKey].code
+                let tdMid = document.querySelector('.mid-cell').innerText = currency[currencyKey].mid
+            }
+        }, 10000)
+
+    </script>
 {% endblock %}
+
