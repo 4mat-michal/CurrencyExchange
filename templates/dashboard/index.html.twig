@@ -3,18 +3,105 @@
 {% block title %}Hello DashboardController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <table class="uk-table uk-table-hover uk-table-divider currency-table">
+        <thead>
+        <tr>
+            <th>Currency</th>
+            <th>Unit</th>
+            <th>Values</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody class="table-body">
+        </tbody>
+    </table>
+    <table class="uk-table uk-table-hover uk-table-divider currency-table">
+        <thead>
+        <tr>
+            <th>Currency</th>
+            <th>Unit price (sell)</th>
+            <th>Amount</th>
+            <th>Value</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody class="table-body">
+        {% for key,myWallet in wallet %}
+            <tr class="row-table-{{ myWallet.currencies }}">
+                <td class="{{ myWallet.currencies }}">{{ myWallet.currencies }}</td>
+                <td class="amount-{{ myWallet.currencies }}">{{ myWallet.amount }}</td>
+                <td class="value-{{ myWallet.currencies }}"></td>
+                <td>
+                    <button>Sell</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <script>
+        let currency = [];
+        fetch('{{ url('api_dashboard') }}').then(resp => resp.json()).then(data => {
+            currency = data.data
+        })
+        setTimeout(function () {
+            let tableBody = document.querySelector('.table-body');
+            for (var currencyKey in currency) {
+                let row = document.querySelector('.row-table-' + currency[currencyKey].code);
+                let tr = document.createElement('tr');
+                let tdCurrency = document.createElement('td');
+                let tdCode = document.createElement('td');
+                let tdMid = document.createElement('td');
+                let tdAction = document.createElement('td');
+                let button = document.createElement('button');
+                button.innerText = 'Buy';
+                tdCurrency.innerText = currency[currencyKey].currency
+                tdCode.innerText = currency[currencyKey].code
+                tdMid.innerText = currency[currencyKey].ask
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'F:/Michał/PHP/Cantor/CurrencyExchange/src/Controller/DashboardController.php'|file_link(0) }}">src/Controller/DashboardController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'F:/Michał/PHP/Cantor/CurrencyExchange/templates/dashboard/index.html.twig'|file_link(0) }}">templates/dashboard/index.html.twig</a></code></li>
-    </ul>
-</div>
+                button.className = 'button-buy' + currencyKey;
+                tdCurrency.className = 'currency-cell' + currencyKey
+                tdCode.className = 'code-cell' + currencyKey;
+                tdMid.className = 'mid-cell' + currencyKey;
+
+                tdAction.appendChild(button);
+                tr.appendChild(tdCurrency)
+                tr.appendChild(tdCode)
+                tr.appendChild(tdMid)
+                tr.appendChild(tdAction)
+                tableBody.appendChild(tr)
+                let walletTd = document.querySelector(`.${currency[currencyKey].code}`)
+                if (walletTd) {
+                    let tdUnitPriceSell = document.createElement('td');
+                    tdUnitPriceSell.className = 'td-bid';
+                    tdUnitPriceSell.innerText = currency[currencyKey].bid
+                    row.insertBefore(tdUnitPriceSell, walletTd.nextSibling);
+                    let amount = document.querySelector(`.amount-${currency[currencyKey].code}`)
+                    let value = document.querySelector(`.value-${currency[currencyKey].code}`)
+                    value.innerHTML = amount.innerHTML * currency[currencyKey].bid;
+                }
+            }
+        }, 1500)
+
+        setInterval(function () {
+            fetch('{{ url('api_dashboard') }}').then(resp => resp.json()).then(data => {
+                currency = data.data
+            })
+            for (var currencyKey in currency) {
+                let row = document.querySelector('.row-table-' + currency[currencyKey].code);
+                let tdCurrency = document.querySelector('.currency-cell' + currencyKey).innerText = currency[currencyKey].currency
+                let tdCode = document.querySelector('.code-cell' + currencyKey).innerText = currency[currencyKey].code
+                let tdMid = document.querySelector('.mid-cell' + currencyKey).innerText = currency[currencyKey].ask
+                let bidTd = document.querySelector(`.${currency[currencyKey].bid}`)
+                if (bidTd) {
+                    bidTd.innerHTML = currency[currencyKey].bid
+                    let amount = document.querySelector(`.amount-${currency[currencyKey].code}`)
+                    let value = document.querySelector(`.value-${currency[currencyKey].code}`)
+                    value.innerHTML = amount.innerHTML * currency[currencyKey].bid;
+                }
+            }
+        }, 10000)
+
+    </script>
 {% endblock %}
+
