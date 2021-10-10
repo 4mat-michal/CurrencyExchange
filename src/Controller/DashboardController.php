@@ -23,9 +23,15 @@ class DashboardController extends AbstractController
      */
     public function index(): Response
     {
+        $pln = 0;
         $wallet = $this->entityManager->getRepository(Wallet::class)->findBy(['user' => $this->getUser()]);
+//        foreach ($wallet as $item) {
+//            $pln += $item->getPlnAvailable();
+//        }
+//
         return $this->render('dashboard/index.html.twig', [
-            'wallet' => $wallet
+            'wallet' => $wallet,
+            'pln' => $pln
         ]);
     }
 

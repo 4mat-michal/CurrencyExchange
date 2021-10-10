@@ -26,81 +26,82 @@
         </tr>
         </thead>
         <tbody class="table-body">
-        {% for key,myWallet in wallet %}
-            <tr class="row-table-{{ myWallet.currencies }}">
-                <td class="{{ myWallet.currencies }}">{{ myWallet.currencies }}</td>
-                <td class="amount-{{ myWallet.currencies }}">{{ myWallet.amount }}</td>
-                <td class="value-{{ myWallet.currencies }}"></td>
-                <td>
-                    <button>Sell</button>
-                </td>
-            </tr>
-        {% endfor %}
+{#        {% for key,myWallet in wallet %}#}
+{#            <tr class="row-table-{{ myWallet.currencies }}">#}
+{#                <td class="{{ myWallet.currencies }}">{{ myWallet.currencies }}</td>#}
+{#                <td class="amount-{{ myWallet.currencies }}">{{ myWallet.amount }}</td>#}
+{#                <td class="value-{{ myWallet.currencies }}"></td>#}
+{#                <td>#}
+{#                    <button>Sell</button>#}
+{#                </td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{#        <th>Available PLN: {{ pln }}</th>#}
         </tbody>
     </table>
 
     <script>
-        let currency = [];
-        fetch('{{ url('api_dashboard') }}').then(resp => resp.json()).then(data => {
-            currency = data.data
-        })
-        setTimeout(function () {
-            let tableBody = document.querySelector('.table-body');
-            for (var currencyKey in currency) {
-                let row = document.querySelector('.row-table-' + currency[currencyKey].code);
-                let tr = document.createElement('tr');
-                let tdCurrency = document.createElement('td');
-                let tdCode = document.createElement('td');
-                let tdMid = document.createElement('td');
-                let tdAction = document.createElement('td');
-                let button = document.createElement('button');
-                button.innerText = 'Buy';
-                tdCurrency.innerText = currency[currencyKey].currency
-                tdCode.innerText = currency[currencyKey].code
-                tdMid.innerText = currency[currencyKey].ask
+        {#let currency = [];#}
+        {#fetch('{{ url('api_dashboard') }}').then(resp => resp.json()).then(data => {#}
+        {#    currency = data.data#}
+        {#})#}
+        {#setTimeout(function () {#}
+        {#    let tableBody = document.querySelector('.table-body');#}
+        {#    for (var currencyKey in currency) {#}
+        {#        let row = document.querySelector('.row-table-' + currency[currencyKey].code);#}
+        {#        let tr = document.createElement('tr');#}
+        {#        let tdCurrency = document.createElement('td');#}
+        {#        let tdCode = document.createElement('td');#}
+        {#        let tdMid = document.createElement('td');#}
+        {#        let tdAction = document.createElement('td');#}
+        {#        let button = document.createElement('button');#}
+        {#        button.innerText = 'Buy';#}
+        {#        tdCurrency.innerText = currency[currencyKey].currency#}
+        {#        tdCode.innerText = currency[currencyKey].code#}
+        {#        tdMid.innerText = currency[currencyKey].ask#}
 
-                button.className = 'button-buy' + currencyKey;
-                tdCurrency.className = 'currency-cell' + currencyKey
-                tdCode.className = 'code-cell' + currencyKey;
-                tdMid.className = 'mid-cell' + currencyKey;
+        {#        button.className = 'button-buy' + currencyKey;#}
+        {#        tdCurrency.className = 'currency-cell' + currencyKey#}
+        {#        tdCode.className = 'code-cell' + currencyKey;#}
+        {#        tdMid.className = 'mid-cell' + currencyKey;#}
 
-                tdAction.appendChild(button);
-                tr.appendChild(tdCurrency)
-                tr.appendChild(tdCode)
-                tr.appendChild(tdMid)
-                tr.appendChild(tdAction)
-                tableBody.appendChild(tr)
-                let walletTd = document.querySelector(`.${currency[currencyKey].code}`)
-                if (walletTd) {
-                    let tdUnitPriceSell = document.createElement('td');
-                    tdUnitPriceSell.className = 'td-bid';
-                    tdUnitPriceSell.innerText = currency[currencyKey].bid
-                    row.insertBefore(tdUnitPriceSell, walletTd.nextSibling);
-                    let amount = document.querySelector(`.amount-${currency[currencyKey].code}`)
-                    let value = document.querySelector(`.value-${currency[currencyKey].code}`)
-                    value.innerHTML = amount.innerHTML * currency[currencyKey].bid;
-                }
-            }
-        }, 1500)
+        {#        tdAction.appendChild(button);#}
+        {#        tr.appendChild(tdCurrency)#}
+        {#        tr.appendChild(tdCode)#}
+        {#        tr.appendChild(tdMid)#}
+        {#        tr.appendChild(tdAction)#}
+        {#        tableBody.appendChild(tr)#}
+        {#        let walletTd = document.querySelector(`.${currency[currencyKey].code}`)#}
+        {#        if (walletTd) {#}
+        {#            let tdUnitPriceSell = document.createElement('td');#}
+        {#            tdUnitPriceSell.className = 'td-bid';#}
+        {#            tdUnitPriceSell.innerText = currency[currencyKey].bid#}
+        {#            row.insertBefore(tdUnitPriceSell, walletTd.nextSibling);#}
+        {#            let amount = document.querySelector(`.amount-${currency[currencyKey].code}`)#}
+        {#            let value = document.querySelector(`.value-${currency[currencyKey].code}`)#}
+        {#            value.innerHTML = amount.innerHTML * currency[currencyKey].bid;#}
+        {#        }#}
+        {#    }#}
+        {#}, 1500)#}
 
-        setInterval(function () {
-            fetch('{{ url('api_dashboard') }}').then(resp => resp.json()).then(data => {
-                currency = data.data
-            })
-            for (var currencyKey in currency) {
-                let row = document.querySelector('.row-table-' + currency[currencyKey].code);
-                let tdCurrency = document.querySelector('.currency-cell' + currencyKey).innerText = currency[currencyKey].currency
-                let tdCode = document.querySelector('.code-cell' + currencyKey).innerText = currency[currencyKey].code
-                let tdMid = document.querySelector('.mid-cell' + currencyKey).innerText = currency[currencyKey].ask
-                let bidTd = document.querySelector(`.${currency[currencyKey].bid}`)
-                if (bidTd) {
-                    bidTd.innerHTML = currency[currencyKey].bid
-                    let amount = document.querySelector(`.amount-${currency[currencyKey].code}`)
-                    let value = document.querySelector(`.value-${currency[currencyKey].code}`)
-                    value.innerHTML = amount.innerHTML * currency[currencyKey].bid;
-                }
-            }
-        }, 10000)
+        {#setInterval(function () {#}
+        {#    fetch('{{ url('api_dashboard') }}').then(resp => resp.json()).then(data => {#}
+        {#        currency = data.data#}
+        {#    })#}
+        {#    for (var currencyKey in currency) {#}
+        {#        let row = document.querySelector('.row-table-' + currency[currencyKey].code);#}
+        {#        let tdCurrency = document.querySelector('.currency-cell' + currencyKey).innerText = currency[currencyKey].currency#}
+        {#        let tdCode = document.querySelector('.code-cell' + currencyKey).innerText = currency[currencyKey].code#}
+        {#        let tdMid = document.querySelector('.mid-cell' + currencyKey).innerText = currency[currencyKey].ask#}
+        {#        let bidTd = document.querySelector(`.${currency[currencyKey].bid}`)#}
+        {#        if (bidTd) {#}
+        {#            bidTd.innerHTML = currency[currencyKey].bid#}
+        {#            let amount = document.querySelector(`.amount-${currency[currencyKey].code}`)#}
+        {#            let value = document.querySelector(`.value-${currency[currencyKey].code}`)#}
+        {#            value.innerHTML = amount.innerHTML * currency[currencyKey].bid;#}
+        {#        }#}
+        {#    }#}
+        {#}, 10000)#}
 
     </script>
 {% endblock %}
